@@ -1,0 +1,25 @@
+version: "3.9"
+name: counter
+services:
+  redis:
+    image: redis
+    command:
+      - sh
+      - -c
+      - sleep 10 && redis-server
+    volumes:
+      - redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+  counter:
+    build: .
+    image: reg.istry.cz/2023-03-02/ondrej/counter
+    ports:
+      - 80:80
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  redis:
